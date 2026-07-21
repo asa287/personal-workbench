@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   AlertTriangle,
@@ -23,6 +23,7 @@ import { ProgressBar } from "@/components/ui/ProgressBar";
 import { Button } from "@/components/ui/Button";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { AIAssistButton } from "@/components/shared/AIAssistButton";
+import { TaskForm } from "@/features/tasks/TaskForm";
 import {
   PRIORITY_LABELS,
   PRIORITY_DOT,
@@ -34,6 +35,7 @@ import { cn } from "@/lib/cn";
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const [taskFormOpen, setTaskFormOpen] = useState(false);
   const tasks = useTaskStore((s) => s.tasks);
   const projects = useProjectStore((s) => s.projects);
   const ieltsPlans = useIELTSStore((s) => s.plans);
@@ -190,16 +192,22 @@ export default function Dashboard() {
             </h2>
           </Tooltip>
         </div>
-        <AIAssistButton
-          type="today-summary"
-          ctx={{ tasks }}
-          label="生成今日摘要"
-          onAdopt={(c) => {
-            // 写入剪贴板或备注：MVP 阶段仅 alert 展示，未来可保存为 note
-            navigator.clipboard?.writeText(c).catch(() => {});
-            alert("今日摘要已生成并复制到剪贴板，可粘贴到笔记中使用。");
-          }}
-        />
+        <div className="flex items-center gap-2">
+          <Button variant="blue" size="sm" onClick={() => setTaskFormOpen(true)}>
+            <Plus size={14} />
+            新建待办
+          </Button>
+          <AIAssistButton
+            type="today-summary"
+            ctx={{ tasks }}
+            label="生成今日摘要"
+            onAdopt={(c) => {
+              // 写入剪贴板或备注：MVP 阶段仅 alert 展示，未来可保存为 note
+              navigator.clipboard?.writeText(c).catch(() => {});
+              alert("今日摘要已生成并复制到剪贴板，可粘贴到笔记中使用。");
+            }}
+          />
+        </div>
       </div>
 
       {/* 今日优先 + 风险提醒 */}
@@ -328,13 +336,13 @@ export default function Dashboard() {
 
       {/* 快速新增入口 */}
       <Card>
-        <CardHeader title="快速新增" subtitle="一键进入对应工具创建" />
+        <CardHeader title="快速新增" subtitle="待办可直接创建，其他内容进入对应工具" />
         <CardBody>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
             <QuickAdd
               icon={<CheckSquare size={16} />}
               label="新建待办"
-              onClick={() => navigate("/tasks?new=1")}
+              onClick={() => setTaskFormOpen(true)}
             />
             <QuickAdd
               icon={<KanbanSquare size={16} />}
@@ -362,6 +370,12 @@ export default function Dashboard() {
 
       {/* 兜底占位 */}
       <div className="h-8" />
+
+      <TaskForm
+        open={taskFormOpen}
+        task={null}
+        onClose={() => setTaskFormOpen(false)}
+      />
     </div>
   );
 }

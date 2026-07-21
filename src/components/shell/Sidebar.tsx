@@ -149,10 +149,15 @@ export function Sidebar() {
         <div
           className={cn(
             "h-14 flex items-center border-b border-default",
-            collapsed ? "justify-center px-2" : "px-4 gap-2.5"
+            collapsed ? "justify-center px-2" : "px-3 gap-2.5"
           )}
         >
-          <div className="w-6 h-6 rounded bg-neutral-900 dark:bg-neutral-100 flex items-center justify-center shrink-0">
+          <div
+            className={cn(
+              "w-6 h-6 rounded bg-neutral-900 dark:bg-neutral-100 flex items-center justify-center shrink-0",
+              collapsed && "hidden"
+            )}
+          >
             <div className="flex gap-[2px]">
               <div className="w-[3px] h-3 bg-silver-300 rounded-sm" />
               <div className="w-[3px] h-3 bg-silver-500 rounded-sm" />
@@ -160,7 +165,7 @@ export function Sidebar() {
             </div>
           </div>
           {!collapsed && (
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <div className="text-sm font-semibold text-primary truncate">
                 个人工作台
               </div>
@@ -169,6 +174,15 @@ export function Sidebar() {
               </div>
             </div>
           )}
+          <button
+            type="button"
+            onClick={toggleSidebar}
+            className="w-8 h-8 shrink-0 flex items-center justify-center rounded-md text-tertiary hover:text-primary hover:bg-hover transition-colors"
+            title={collapsed ? "展开工具栏 (Ctrl/Cmd+B)" : "收起工具栏 (Ctrl/Cmd+B)"}
+            aria-label={collapsed ? "展开工具栏" : "收起工具栏"}
+          >
+            {collapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
+          </button>
         </div>
 
         {/* 工具列表 */}
@@ -228,28 +242,6 @@ export function Sidebar() {
           )}
         </nav>
 
-        {/* 底部：收起按钮 */}
-        <div className="p-2 border-t border-default">
-          <button
-            type="button"
-            onClick={toggleSidebar}
-            className={cn(
-              "w-full flex items-center gap-2 h-8 px-2.5 rounded-md text-xs text-tertiary hover:text-primary hover:bg-hover transition-colors",
-              collapsed && "justify-center px-0"
-            )}
-            title={collapsed ? "展开工具栏" : "收起工具栏"}
-          >
-            {collapsed ? (
-              <PanelLeftOpen size={14} />
-            ) : (
-              <>
-                <PanelLeftClose size={14} />
-                <span>收起</span>
-                <span className="ml-auto text-2xs text-muted">⌘B</span>
-              </>
-            )}
-          </button>
-        </div>
       </aside>
 
       {/* 移动端底部 Tab */}
