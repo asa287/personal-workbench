@@ -192,22 +192,16 @@ export default function Dashboard() {
             </h2>
           </Tooltip>
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="blue" size="sm" onClick={() => setTaskFormOpen(true)}>
-            <Plus size={14} />
-            新建待办
-          </Button>
-          <AIAssistButton
-            type="today-summary"
-            ctx={{ tasks }}
-            label="生成今日摘要"
-            onAdopt={(c) => {
-              // 写入剪贴板或备注：MVP 阶段仅 alert 展示，未来可保存为 note
-              navigator.clipboard?.writeText(c).catch(() => {});
-              alert("今日摘要已生成并复制到剪贴板，可粘贴到笔记中使用。");
-            }}
-          />
-        </div>
+        <AIAssistButton
+          type="today-summary"
+          ctx={{ tasks }}
+          label="生成今日摘要"
+          onAdopt={(c) => {
+            // 写入剪贴板或备注：MVP 阶段仅 alert 展示，未来可保存为 note
+            navigator.clipboard?.writeText(c).catch(() => {});
+            alert("今日摘要已生成并复制到剪贴板，可粘贴到笔记中使用。");
+          }}
+        />
       </div>
 
       {/* 今日优先 + 风险提醒 */}
@@ -217,21 +211,41 @@ export default function Dashboard() {
             title="今日优先处理"
             subtitle={`共 ${priorities.length} 项重点`}
             action={
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => navigate("/tasks")}
-              >
-                查看全部 <ArrowRight size={12} />
-              </Button>
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setTaskFormOpen(true)}
+                  aria-label="新建待办"
+                  title="新建待办"
+                >
+                  <Plus size={15} />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => navigate("/tasks")}
+                >
+                  查看全部 <ArrowRight size={12} />
+                </Button>
+              </div>
             }
           />
           <CardBody className="p-0">
             {priorities.length === 0 ? (
-              <div className="px-4 py-10 text-center text-sm text-tertiary">
+              <button
+                type="button"
+                onClick={() => setTaskFormOpen(true)}
+                className="w-full px-4 py-10 text-center text-sm text-tertiary hover:bg-hover hover:text-secondary cursor-pointer transition-colors"
+                title="点击新建待办"
+              >
                 <CheckSquare size={20} className="mx-auto mb-2 opacity-50" />
                 今日无重点事项。适合推进长期项目。
-              </div>
+                <span className="mt-2 flex items-center justify-center gap-1 text-2xs text-muted">
+                  <Plus size={12} />
+                  点击新建待办
+                </span>
+              </button>
             ) : (
               <ul className="divide-app">
                 {priorities.map((t) => (
