@@ -13,7 +13,7 @@ interface SettingsState extends AppSettings {
 export const useSettingsStore = create<SettingsState>()(
   persist(
     (set) => ({
-      theme: "dark",
+      theme: "light",
       sidebarCollapsed: false,
       setTheme: (theme) => set({ theme }),
       toggleTheme: () =>

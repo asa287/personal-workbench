@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    /* Light theme tokens (kept minimal; app defaults to dark) */
+    /* Light theme tokens (app defaults to light) */
     --bg-primary: #fafafa;
     --bg-surface: #ffffff;
     --bg-elevated: #ffffff;
