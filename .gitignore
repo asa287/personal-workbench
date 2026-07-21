@@ -8,8 +8,10 @@ pnpm-debug.log*
 
 node_modules
 dist
+dist.zip
 dist-ssr
 *.local
+*.tsbuildinfo
 
 # Editor directories and files
 .vscode/*
