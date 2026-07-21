@@ -41,7 +41,7 @@ export const TOOL_META: Record<ToolId, ToolMeta> = {
     shortName: "首页",
     description: "今日重点与全局概览",
     icon: LayoutDashboard,
-    path: "/",
+    path: "/app",
     group: "pinned",
     fixed: true,
   },
@@ -51,7 +51,7 @@ export const TOOL_META: Record<ToolId, ToolMeta> = {
     shortName: "待办",
     description: "全局任务与提醒",
     icon: CheckSquare,
-    path: "/tasks",
+    path: "/app/tasks",
     group: "urgent",
   },
   projects: {
@@ -60,7 +60,7 @@ export const TOOL_META: Record<ToolId, ToolMeta> = {
     shortName: "项目",
     description: "长期项目与作品集",
     icon: KanbanSquare,
-    path: "/projects",
+    path: "/app/projects",
     group: "urgent",
   },
   ielts: {
@@ -69,7 +69,7 @@ export const TOOL_META: Record<ToolId, ToolMeta> = {
     shortName: "雅思",
     description: "备考计划与模考",
     icon: GraduationCap,
-    path: "/ielts",
+    path: "/app/ielts",
     group: "urgent",
   },
   media: {
@@ -78,7 +78,7 @@ export const TOOL_META: Record<ToolId, ToolMeta> = {
     shortName: "自媒体",
     description: "小红书等内容运营",
     icon: Radio,
-    path: "/media",
+    path: "/app/media",
     group: "longterm",
   },
   culture: {
@@ -87,7 +87,7 @@ export const TOOL_META: Record<ToolId, ToolMeta> = {
     shortName: "书影音",
     description: "书影音与摘录素材",
     icon: BookOpen,
-    path: "/culture",
+    path: "/app/culture",
     group: "longterm",
   },
 };

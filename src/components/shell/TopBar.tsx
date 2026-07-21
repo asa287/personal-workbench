@@ -1,8 +1,21 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { Settings, Plus, Sun, Moon } from "lucide-react";
+import {
+  AlertTriangle,
+  Cloud,
+  CloudOff,
+  LogOut,
+  Plus,
+  RefreshCw,
+  Settings,
+  Sun,
+  Moon,
+  UserCircle,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { TOOL_META } from "@/lib/tools";
 import { useSettingsStore } from "@/stores/useSettingsStore";
+import { useAuth } from "@/features/auth/AuthProvider";
+import { useSync } from "@/features/sync/SyncProvider";
 import { Button } from "@/components/ui/Button";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { cn } from "@/lib/cn";
@@ -18,19 +31,31 @@ export function TopBar({
   const navigate = useNavigate();
   const theme = useSettingsStore((s) => s.theme);
   const toggleTheme = useSettingsStore((s) => s.toggleTheme);
+  const { user, signOut } = useAuth();
+  const sync = useSync();
 
   // 推断当前工具
   const currentTool = Object.values(TOOL_META).find((t) =>
-    t.path === "/" ? location.pathname === "/" : location.pathname.startsWith(t.path)
+    t.path === "/app"
+      ? location.pathname === "/app"
+      : location.pathname.startsWith(t.path)
   );
 
   const [quickOpen, setQuickOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
   const quickRef = useRef<HTMLDivElement>(null);
+  const accountRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onDoc = (e: MouseEvent) => {
       if (quickRef.current && !quickRef.current.contains(e.target as Node)) {
         setQuickOpen(false);
+      }
+      if (
+        accountRef.current &&
+        !accountRef.current.contains(e.target as Node)
+      ) {
+        setAccountOpen(false);
       }
     };
     document.addEventListener("mousedown", onDoc);
@@ -70,21 +95,108 @@ export function TopBar({
           </Button>
           {quickOpen && (
             <div className="absolute right-0 top-[calc(100%+6px)] w-44 bg-surface border border-default rounded-lg shadow-overlay p-1 z-40 animate-scale-in origin-top-right">
-              <QuickAddMenuItem onClick={() => go("/tasks?new=1")}>
+              <QuickAddMenuItem onClick={() => go("/app/tasks?new=1")}>
                 新建待办
               </QuickAddMenuItem>
-              <QuickAddMenuItem onClick={() => go("/projects?new=1")}>
+              <QuickAddMenuItem onClick={() => go("/app/projects?new=1")}>
                 新建项目
               </QuickAddMenuItem>
-              <QuickAddMenuItem onClick={() => go("/culture?new=1")}>
+              <QuickAddMenuItem onClick={() => go("/app/culture?new=1")}>
                 记录积累
               </QuickAddMenuItem>
-              <QuickAddMenuItem onClick={() => go("/ielts?tab=checkin&new=1")}>
+              <QuickAddMenuItem onClick={() => go("/app/ielts?tab=checkin&new=1")}>
                 雅思打卡
               </QuickAddMenuItem>
-              <QuickAddMenuItem onClick={() => go("/media?new=1")}>
+              <QuickAddMenuItem onClick={() => go("/app/media?new=1")}>
                 自媒体选题
               </QuickAddMenuItem>
+            </div>
+          )}
+        </div>
+
+        {/* 账号与同步 */}
+        <div ref={accountRef} className="relative">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setAccountOpen((value) => !value)}
+            aria-label="账号与同步"
+            title={sync.message || "账号与同步"}
+          >
+            {sync.status === "offline" ? (
+              <CloudOff size={16} />
+            ) : sync.status === "conflict" || sync.status === "error" ? (
+              <AlertTriangle size={16} className="text-warning" />
+            ) : sync.status === "syncing" || sync.status === "loading" ? (
+              <RefreshCw size={16} className="animate-spin" />
+            ) : (
+              <Cloud size={16} />
+            )}
+          </Button>
+
+          {accountOpen && (
+            <div className="absolute right-0 top-[calc(100%+6px)] w-72 bg-surface border border-default rounded-lg shadow-overlay p-3 z-40 animate-scale-in origin-top-right">
+              <div className="flex items-start gap-2.5 pb-3 border-b border-default">
+                <UserCircle size={20} className="text-tertiary shrink-0 mt-0.5" />
+                <div className="min-w-0">
+                  <div className="text-xs font-medium text-primary truncate">
+                    {user?.email ?? "已登录"}
+                  </div>
+                  <div className="text-2xs text-tertiary mt-0.5">
+                    {sync.message || "同步服务已连接"}
+                  </div>
+                </div>
+              </div>
+
+              {sync.status === "conflict" ? (
+                <div className="py-3 space-y-2">
+                  <p className="text-xs text-warning">
+                    此设备和云端都有修改，请选择保留的版本。
+                  </p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => void sync.useCloudVersion()}
+                    >
+                      使用云端
+                    </Button>
+                    <Button
+                      variant="blue"
+                      size="sm"
+                      onClick={() => void sync.useLocalVersion()}
+                    >
+                      使用本地
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => void sync.syncNow()}
+                  className="w-full flex items-center gap-2 py-2.5 text-xs text-secondary hover:text-primary"
+                >
+                  <RefreshCw size={13} />
+                  立即同步
+                  {sync.lastSyncedAt && (
+                    <span className="ml-auto text-2xs text-muted">
+                      {new Date(sync.lastSyncedAt).toLocaleTimeString("zh-CN", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </span>
+                  )}
+                </button>
+              )}
+
+              <button
+                type="button"
+                onClick={() => void signOut()}
+                className="w-full flex items-center gap-2 pt-2.5 border-t border-default text-xs text-tertiary hover:text-danger"
+              >
+                <LogOut size={13} />
+                退出登录
+              </button>
             </div>
           )}
         </div>
@@ -104,7 +216,7 @@ export function TopBar({
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => navigate("/settings")}
+          onClick={() => navigate("/app/settings")}
           aria-label="设置"
         >
           <Settings size={16} />

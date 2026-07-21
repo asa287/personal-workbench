@@ -41,7 +41,7 @@ function SortableItem({ id }: { id: ToolId }) {
     >
       <NavLink
         to={meta.path}
-        end={meta.path === "/"}
+        end={meta.path === "/app"}
         className={({ isActive }) =>
           cn(
             "flex items-center gap-2.5 h-9 px-2.5 rounded-md text-sm transition-colors relative",
@@ -252,14 +252,14 @@ export function Sidebar() {
             const meta = TOOL_META[id];
             const Icon = meta.icon;
             const active =
-              meta.path === "/"
-                ? location.pathname === "/"
+              meta.path === "/app"
+                ? location.pathname === "/app"
                 : location.pathname.startsWith(meta.path);
             return (
               <NavLink
                 key={id}
                 to={meta.path}
-                end={meta.path === "/"}
+                end={meta.path === "/app"}
                 className={cn(
                   "flex-1 flex flex-col items-center justify-center gap-0.5 text-2xs transition-colors",
                   active ? "text-brand" : "text-muted"

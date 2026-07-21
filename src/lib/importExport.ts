@@ -22,7 +22,7 @@ import { useCultureStore } from "@/stores/useCultureStore";
 import { useToolStore } from "@/stores/useToolStore";
 import { useSettingsStore } from "@/stores/useSettingsStore";
 
-const EXPORT_VERSION = "1.0.0";
+const EXPORT_VERSION = "2.0.0";
 
 export function buildExportBundle(): ExportBundle {
   const taskStore = useTaskStore.getState();
@@ -55,6 +55,26 @@ export function buildExportBundle(): ExportBundle {
       },
     },
   };
+}
+
+export function hasLocalUserData(bundle = buildExportBundle()): boolean {
+  const { data } = bundle;
+  return (
+    data.tasks.length > 0 ||
+    data.projects.length > 0 ||
+    data.collections.length > 0 ||
+    data.ieltsPlan.length > 0 ||
+    data.ieltsCheckin.length > 0 ||
+    data.ieltsErrors.length > 0 ||
+    data.ieltsMock.length > 0 ||
+    data.ieltsCourses.length > 0 ||
+    data.content.length > 0 ||
+    data.culture.length > 0
+  );
+}
+
+export function applySnapshot(bundle: unknown): ImportResult {
+  return importFromBundle(bundle, true);
 }
 
 export function downloadJSON(filename: string, data: unknown) {

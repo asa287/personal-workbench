@@ -5,34 +5,35 @@ import { Tooltip } from "@/components/ui/Tooltip";
 import { ToolManager } from "./ToolManager";
 import { DataManager } from "./DataManager";
 import { AboutTab } from "./AboutTab";
+import { AccountSyncPanel } from "./AccountSyncPanel";
 
-// 设置中心三个 tab：工具管理 / 数据管理 / 关于
-type SettingsTab = "tools" | "data" | "about";
+type SettingsTab = "account" | "tools" | "data" | "about";
 
 const TAB_OPTIONS: { value: SettingsTab; label: string }[] = [
+  { value: "account", label: "账号与同步" },
   { value: "tools", label: "工具管理" },
   { value: "data", label: "数据管理" },
   { value: "about", label: "关于" },
 ];
 
-const VALID_TABS: SettingsTab[] = ["tools", "data", "about"];
+const VALID_TABS: SettingsTab[] = ["account", "tools", "data", "about"];
 
 export default function SettingsPage() {
   const [params, setParams] = useSearchParams();
 
-  // 从 URL 读取 ?tab=tools|data|about，默认 tools
+  // 从 URL 读取设置页签，默认账号与同步
   const tabParam = params.get("tab");
   const initialTab: SettingsTab =
     tabParam && VALID_TABS.includes(tabParam as SettingsTab)
       ? (tabParam as SettingsTab)
-      : "tools";
+      : "account";
   const [tab, setTab] = useState<SettingsTab>(initialTab);
 
   // 切换 tab 时同步到 URL（默认 tab 不写入 query）
   const onTabChange = (next: SettingsTab) => {
     setTab(next);
     const p = new URLSearchParams(params);
-    if (next === "tools") {
+    if (next === "account") {
       p.delete("tab");
     } else {
       p.set("tab", next);
@@ -62,6 +63,7 @@ export default function SettingsPage() {
       </div>
 
       <div>
+        {tab === "account" && <AccountSyncPanel />}
         {tab === "tools" && <ToolManager />}
         {tab === "data" && <DataManager />}
         {tab === "about" && <AboutTab />}

@@ -79,7 +79,7 @@ export default function Dashboard() {
       list.push({
         tone: "danger",
         text: `${overdueCount} 项待办已逾期`,
-        onClick: () => navigate("/tasks?filter=overdue"),
+        onClick: () => navigate("/app/tasks?filter=overdue"),
       });
     }
     const todayCount = openTasks.filter((t) => isDueToday(t.dueDate)).length;
@@ -87,7 +87,7 @@ export default function Dashboard() {
       list.push({
         tone: "warning",
         text: `${todayCount} 项今日到期`,
-        onClick: () => navigate("/tasks?filter=today"),
+        onClick: () => navigate("/app/tasks?filter=today"),
       });
     }
     // 停滞项目（paused 状态）
@@ -96,7 +96,7 @@ export default function Dashboard() {
       list.push({
         tone: "warning",
         text: `${pausedProjects.length} 个项目处于暂停状态`,
-        onClick: () => navigate("/projects"),
+        onClick: () => navigate("/app/projects"),
       });
     }
     // 雅思考试临近
@@ -107,7 +107,7 @@ export default function Dashboard() {
         list.push({
           tone: days <= 7 ? "danger" : "warning",
           text: `距雅思考试还有 ${days} 天`,
-          onClick: () => navigate("/ielts"),
+          onClick: () => navigate("/app/ielts"),
         });
       }
     }
@@ -224,7 +224,7 @@ export default function Dashboard() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => navigate("/tasks")}
+                  onClick={() => navigate("/app/tasks")}
                 >
                   查看全部 <ArrowRight size={12} />
                 </Button>
@@ -252,7 +252,7 @@ export default function Dashboard() {
                   <li
                     key={t.id}
                     className="px-4 py-2.5 flex items-center gap-3 hover:bg-hover cursor-pointer transition-colors"
-                    onClick={() => navigate("/tasks")}
+                    onClick={() => navigate("/app/tasks")}
                   >
                     <span
                       className={cn(
@@ -361,22 +361,22 @@ export default function Dashboard() {
             <QuickAdd
               icon={<KanbanSquare size={16} />}
               label="新建项目"
-              onClick={() => navigate("/projects?new=1")}
+              onClick={() => navigate("/app/projects?new=1")}
             />
             <QuickAdd
               icon={<GraduationCap size={16} />}
               label="雅思打卡"
-              onClick={() => navigate("/ielts?tab=checkin&new=1")}
+              onClick={() => navigate("/app/ielts?tab=checkin&new=1")}
             />
             <QuickAdd
               icon={<Radio size={16} />}
               label="自媒体选题"
-              onClick={() => navigate("/media?new=1")}
+              onClick={() => navigate("/app/media?new=1")}
             />
             <QuickAdd
               icon={<BookOpen size={16} />}
               label="记录积累"
-              onClick={() => navigate("/culture?new=1")}
+              onClick={() => navigate("/app/culture?new=1")}
             />
           </div>
         </CardBody>

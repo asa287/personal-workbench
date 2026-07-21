@@ -108,31 +108,29 @@ export function AboutTab() {
               数据存储说明
             </span>
           }
-          subtitle="隐私优先，数据本地化"
+          subtitle="本地优先，账号私有云端同步"
         />
         <CardBody>
           <ul className="space-y-2 text-sm text-secondary">
             <li className="flex items-start gap-2">
               <span className="w-1 h-1 rounded-full bg-silver-500 mt-2 shrink-0" />
               <span>
-                所有数据保存在浏览器
+                数据会缓存在浏览器
                 <span className="text-primary font-medium"> localStorage </span>
-                中，<span className="text-primary font-medium">不上传</span>
-                到任何服务器。
+                中供离线使用，并同步到当前账号专属的 Supabase 私有空间。
               </span>
             </li>
             <li className="flex items-start gap-2">
               <span className="w-1 h-1 rounded-full bg-silver-500 mt-2 shrink-0" />
               <span>
-                清除浏览器缓存或更换设备将导致数据丢失，建议定期使用
-                <span className="text-primary"> 数据管理 → 导出全部 JSON </span>
-                备份。
+                清除浏览器数据后，可登录同一账号从云端恢复；仍建议定期使用
+                <span className="text-primary"> 账号与同步 → 导出本地备份 </span>。
               </span>
             </li>
             <li className="flex items-start gap-2">
               <span className="w-1 h-1 rounded-full bg-silver-500 mt-2 shrink-0" />
               <span>
-                不同浏览器、不同设备之间的数据互不互通；如需跨设备同步，请手动导入导出。
+                云端数据受行级安全策略保护，只有当前登录账号可以读取和修改。
               </span>
             </li>
           </ul>

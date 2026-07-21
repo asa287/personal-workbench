@@ -1,10 +1,13 @@
 import { lazy, Suspense, useEffect } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Navigate, Routes, Route } from "react-router-dom";
 import { Sidebar } from "@/components/shell/Sidebar";
 import { TopBar } from "@/components/shell/TopBar";
 import { useSettingsStore } from "@/stores/useSettingsStore";
+import { ProtectedRoute } from "@/features/auth/ProtectedRoute";
+import { SyncProvider } from "@/features/sync/SyncProvider";
 import { cn } from "@/lib/cn";
 
+const LoginPage = lazy(() => import("@/features/auth/LoginPage"));
 const Dashboard = lazy(() => import("@/features/dashboard/Dashboard"));
 const TasksPage = lazy(() => import("@/features/tasks/TasksPage"));
 const ProjectsPage = lazy(() => import("@/features/projects/ProjectsPage"));
@@ -31,6 +34,28 @@ export default function App() {
   }, [theme]);
 
   return (
+    <Suspense fallback={<Loading />}>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/" element={<Navigate to="/app" replace />} />
+        <Route
+          path="/app/*"
+          element={
+            <ProtectedRoute>
+              <SyncProvider>
+                <WorkbenchShell />
+              </SyncProvider>
+            </ProtectedRoute>
+          }
+        />
+        <Route path="*" element={<Navigate to="/app" replace />} />
+      </Routes>
+    </Suspense>
+  );
+}
+
+function WorkbenchShell() {
+  return (
     <div className="h-full flex bg-app text-primary">
       <Sidebar />
       <div className="flex-1 flex flex-col min-w-0">
@@ -43,13 +68,14 @@ export default function App() {
         >
           <Suspense fallback={<Loading />}>
             <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/tasks/*" element={<TasksPage />} />
-              <Route path="/projects/*" element={<ProjectsPage />} />
-              <Route path="/ielts/*" element={<IELTSPage />} />
-              <Route path="/media/*" element={<MediaPage />} />
-              <Route path="/culture/*" element={<CulturePage />} />
-              <Route path="/settings/*" element={<SettingsPage />} />
+              <Route path="" element={<Dashboard />} />
+              <Route path="tasks/*" element={<TasksPage />} />
+              <Route path="projects/*" element={<ProjectsPage />} />
+              <Route path="ielts/*" element={<IELTSPage />} />
+              <Route path="media/*" element={<MediaPage />} />
+              <Route path="culture/*" element={<CulturePage />} />
+              <Route path="settings/*" element={<SettingsPage />} />
+              <Route path="*" element={<Navigate to="/app" replace />} />
             </Routes>
           </Suspense>
         </main>
