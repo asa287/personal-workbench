@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { ToolConfig, ToolId } from "@/types";
+import { createScopedJSONStorage } from "@/lib/storageScope";
 
 const DEFAULT_TOOLS: ToolConfig[] = [
   { id: "tasks", visible: true, order: 1 },
@@ -36,6 +37,6 @@ export const useToolStore = create<ToolState>()(
       reset: () => set({ tools: DEFAULT_TOOLS }),
       importTools: (tools) => set({ tools }),
     }),
-    { name: "pwb:tools" }
+    { name: "pwb:tools", storage: createScopedJSONStorage() }
   )
 );

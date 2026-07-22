@@ -59,6 +59,7 @@ const DEFAULT_FORM = {
   note: "",
   reusableMaterial: false,
   posterUrl: "",
+  publishPublic: false,
 };
 
 type FormState = typeof DEFAULT_FORM;
@@ -99,6 +100,7 @@ export function CultureForm({
         note: item.note ?? "",
         reusableMaterial: item.reusableMaterial,
         posterUrl: item.posterUrl ?? "",
+        publishPublic: item.visibility === "public",
       });
     } else {
       // 新建时使用当前 Tab 类型作为默认类型
@@ -124,6 +126,7 @@ export function CultureForm({
       note: form.note.trim() || undefined,
       reusableMaterial: form.reusableMaterial,
       posterUrl: form.posterUrl.trim() || undefined,
+      visibility: form.publishPublic ? ("public" as const) : ("private" as const),
     };
     if (item) {
       updateItem(item.id, payload);
@@ -278,6 +281,18 @@ export function CultureForm({
             className="accent-neutral-700 dark:accent-neutral-300"
           />
           标记为可复用素材（用于自媒体选题）
+        </label>
+
+        <label className="flex items-center gap-2 text-sm text-secondary cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={form.publishPublic}
+            onChange={(e) =>
+              setForm({ ...form, publishPublic: e.target.checked })
+            }
+            className="accent-neutral-700 dark:accent-neutral-300"
+          />
+          发布到个人网站
         </label>
       </div>
     </Modal>

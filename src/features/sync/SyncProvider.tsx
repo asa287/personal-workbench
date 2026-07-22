@@ -460,6 +460,15 @@ export function SyncProvider({ children }: { children: ReactNode }) {
 
 export function useSync() {
   const value = useContext(SyncContext);
-  if (!value) throw new Error("useSync 必须在 SyncProvider 内使用");
+  if (!value) {
+    return {
+      status: "idle" as const,
+      message: "本地试用，不同步云端",
+      lastSyncedAt: null,
+      syncNow: async () => undefined,
+      useLocalVersion: async () => undefined,
+      useCloudVersion: async () => undefined,
+    };
+  }
   return value;
 }

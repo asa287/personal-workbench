@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Project } from "@/types";
 import { genId, nowISO } from "@/lib/id";
+import { createScopedJSONStorage } from "@/lib/storageScope";
 
 interface ProjectState {
   projects: Project[];
@@ -46,6 +47,6 @@ export const useProjectStore = create<ProjectState>()(
           projects: replace ? projects : [...projects, ...s.projects],
         })),
     }),
-    { name: "pwb:projects" }
+    { name: "pwb:projects", storage: createScopedJSONStorage() }
   )
 );

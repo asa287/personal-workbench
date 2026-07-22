@@ -30,6 +30,8 @@ interface FormState {
   collects: string;
   comments: string;
   review: string;
+  publishPublic: boolean;
+  publicUrl: string;
 }
 
 const DEFAULT_FORM: FormState = {
@@ -46,6 +48,8 @@ const DEFAULT_FORM: FormState = {
   collects: "0",
   comments: "0",
   review: "",
+  publishPublic: false,
+  publicUrl: "",
 };
 
 export function ContentForm({
@@ -86,6 +90,8 @@ export function ContentForm({
           collects: String(item.collects ?? 0),
           comments: String(item.comments ?? 0),
           review: item.review ?? "",
+          publishPublic: item.visibility === "public",
+          publicUrl: item.publicUrl ?? "",
         }
       : { ...DEFAULT_FORM };
     if (preset) {
@@ -164,6 +170,8 @@ export function ContentForm({
       collects: Number(form.collects) || 0,
       comments: Number(form.comments) || 0,
       review: form.review.trim() || undefined,
+      visibility: form.publishPublic ? ("public" as const) : ("private" as const),
+      publicUrl: form.publicUrl.trim() || undefined,
     };
     if (item) {
       updateItem(item.id, payload);
@@ -357,6 +365,25 @@ export function ContentForm({
             rows={3}
           />
         </Field>
+
+        <Field label="公开链接" hint="发布到个人网站时展示的外链（可选）">
+          <Input
+            value={form.publicUrl}
+            onChange={(e) => setField("publicUrl", e.target.value)}
+            placeholder="https://…"
+            type="url"
+          />
+        </Field>
+
+        <label className="flex items-center gap-2 text-sm text-secondary cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={form.publishPublic}
+            onChange={(e) => setField("publishPublic", e.target.checked)}
+            className="accent-neutral-700 dark:accent-neutral-300"
+          />
+          发布到个人网站
+        </label>
       </div>
     </Modal>
   );

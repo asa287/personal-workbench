@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Collection } from "@/types";
 import { genId, nowISO } from "@/lib/id";
+import { createScopedJSONStorage } from "@/lib/storageScope";
 
 interface CollectionState {
   collections: Collection[];
@@ -43,6 +44,6 @@ export const useCollectionStore = create<CollectionState>()(
           collections: replace ? collections : [...collections, ...s.collections],
         })),
     }),
-    { name: "pwb:collections" }
+    { name: "pwb:collections", storage: createScopedJSONStorage() }
   )
 );

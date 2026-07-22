@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { AppSettings } from "@/types";
+import { createScopedJSONStorage } from "@/lib/storageScope";
 
 interface SettingsState extends AppSettings {
   setTheme: (theme: "dark" | "light") => void;
@@ -23,6 +24,6 @@ export const useSettingsStore = create<SettingsState>()(
         set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
       importSettings: (s) => set(s),
     }),
-    { name: "pwb:settings" }
+    { name: "pwb:settings", storage: createScopedJSONStorage() }
   )
 );

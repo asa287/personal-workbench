@@ -3,6 +3,9 @@ export type ID = string;
 export type ISODateTime = string;
 export type ISODate = string;
 
+/** 内容可见性：默认 private；public 可发布到个人网站 */
+export type Visibility = "private" | "public";
+
 // ===== Tool 配置 =====
 export type ToolId =
   | "dashboard"
@@ -64,6 +67,7 @@ export interface Project {
   status: ProjectStatus;
   portfolioNote?: string;
   collectionId?: ID; // 所属合集（可选）
+  visibility?: Visibility;
   createdAt: ISODateTime;
   updatedAt: ISODateTime;
 }
@@ -150,6 +154,8 @@ export interface ContentItem {
   collects: number;
   comments: number;
   review?: string;
+  visibility?: Visibility;
+  publicUrl?: string;
   createdAt: ISODateTime;
   updatedAt: ISODateTime;
 }
@@ -186,8 +192,61 @@ export interface CultureItem {
   reusableMaterial: boolean;
   note?: string;
   posterUrl?: string; // 海报 / 封面图链接（用于电影/电视剧等网格展示）
+  visibility?: Visibility;
   createdAt: ISODateTime;
   updatedAt: ISODateTime;
+}
+
+// ===== 公开个人网站投影 =====
+export interface PublicSocialLink {
+  label: string;
+  url: string;
+}
+
+export interface PublicProfile {
+  displayName: string;
+  headline?: string;
+  bio?: string;
+  contactEmail?: string;
+  links: PublicSocialLink[];
+}
+
+export interface PublicProjectCard {
+  id: ID;
+  name: string;
+  goal: string;
+  role: string;
+  status: ProjectStatus;
+  keyResults: string[];
+  portfolioNote?: string;
+  materialLinks: string[];
+}
+
+export interface PublicCultureCard {
+  id: ID;
+  type: CultureType;
+  title: string;
+  creator?: string;
+  rating: number;
+  tags: string[];
+  opinion?: string;
+  posterUrl?: string;
+}
+
+export interface PublicLinkCard {
+  id: ID;
+  title: string;
+  url?: string;
+  platform?: MediaPlatform;
+  tags: string[];
+}
+
+export interface PublicProjection {
+  updatedAt: ISODateTime;
+  profile: PublicProfile;
+  projects: PublicProjectCard[];
+  culture: PublicCultureCard[];
+  links: PublicLinkCard[];
 }
 
 // ===== Settings =====

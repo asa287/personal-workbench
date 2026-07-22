@@ -15,7 +15,13 @@ interface AuthContextValue {
   loading: boolean;
   configured: boolean;
   signInWithPassword: (email: string, password: string) => Promise<void>;
+  /** @deprecated 使用 signUpWithInvite；保留仅为兼容 */
   signUpWithPassword: (email: string, password: string) => Promise<string>;
+  signUpWithInvite: (
+    email: string,
+    password: string,
+    inviteCode: string
+  ) => Promise<string>;
   sendMagicLink: (email: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
@@ -67,16 +73,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (error) throw error;
       },
       signUpWithPassword: async (email, password) => {
-        if (!supabase) throw new Error("Supabase 尚未配置");
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: { emailRedirectTo: `${window.location.origin}/login` },
-        });
-        if (error) throw error;
-        return data.session
-          ? "注册成功，已登录。"
-          : "注册成功，请前往邮箱完成验证。";
+        // 开放注册已关闭，引导走邀请码
+        return signUpWithInviteInternal(email, password, "");
+      },
+      signUpWithInvite: async (email, password, inviteCode) => {
+        return signUpWithInviteInternal(email, password, inviteCode);
       },
       sendMagicLink: async (email) => {
         if (!supabase) throw new Error("Supabase 尚未配置");
@@ -84,7 +85,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           email,
           options: {
             emailRedirectTo: `${window.location.origin}/login`,
-            shouldCreateUser: true,
+            shouldCreateUser: false,
           },
         });
         if (error) throw error;
@@ -99,6 +100,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+async function signUpWithInviteInternal(
+  email: string,
+  password: string,
+  inviteCode: string
+): Promise<string> {
+  if (!supabase) throw new Error("Supabase 尚未配置");
+  const code = inviteCode.trim();
+  if (!code) throw new Error("请输入邀请码");
+
+  const { data: ok, error: rpcError } = await supabase.rpc(
+    "consume_invite_code",
+    { p_code: code }
+  );
+  if (rpcError) throw rpcError;
+  if (!ok) throw new Error("邀请码无效、已用尽或已过期");
+
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: { emailRedirectTo: `${window.location.origin}/login` },
+  });
+  if (error) throw error;
+  return data.session
+    ? "注册成功，已登录。"
+    : "注册成功，请前往邮箱完成验证。";
 }
 
 export function useAuth() {

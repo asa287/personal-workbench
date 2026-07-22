@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { ContentItem } from "@/types";
 import { genId, nowISO } from "@/lib/id";
+import { createScopedJSONStorage } from "@/lib/storageScope";
 
 interface ContentState {
   items: ContentItem[];
@@ -46,6 +47,6 @@ export const useContentStore = create<ContentState>()(
           items: replace ? items : [...items, ...s.items],
         })),
     }),
-    { name: "pwb:content" }
+    { name: "pwb:content", storage: createScopedJSONStorage() }
   )
 );

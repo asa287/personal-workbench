@@ -20,6 +20,7 @@ interface FormState {
   collectionId: string; // "" = 未归类
   review: string;
   portfolioNote: string;
+  publishPublic: boolean;
 }
 
 const DEFAULT_FORM: FormState = {
@@ -32,6 +33,7 @@ const DEFAULT_FORM: FormState = {
   collectionId: "",
   review: "",
   portfolioNote: "",
+  publishPublic: false,
 };
 
 export function ProjectForm({
@@ -67,6 +69,7 @@ export function ProjectForm({
         collectionId: project.collectionId ?? "",
         review: project.review ?? "",
         portfolioNote: project.portfolioNote ?? "",
+        publishPublic: project.visibility === "public",
       });
       setKeyResults(project.keyResults.length ? [...project.keyResults] : [""]);
       setMaterialLinks(
@@ -99,6 +102,7 @@ export function ProjectForm({
       review: form.review.trim() || undefined,
       status: form.status,
       collectionId: form.collectionId || undefined,
+      visibility: form.publishPublic ? "public" : "private",
     };
     // 仅在 done/archived 状态下写入 portfolioNote，其它状态保留原值不覆盖
     if (showPortfolio) {
@@ -251,6 +255,18 @@ export function ProjectForm({
             />
           </Field>
         )}
+
+        <label className="flex items-center gap-2 text-sm text-secondary cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={form.publishPublic}
+            onChange={(e) =>
+              setForm({ ...form, publishPublic: e.target.checked })
+            }
+            className="accent-neutral-700 dark:accent-neutral-300"
+          />
+          发布到个人网站
+        </label>
       </div>
     </Modal>
   );

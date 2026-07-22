@@ -18,6 +18,10 @@ import { CSS } from "@dnd-kit/utilities";
 import { PanelLeftClose, PanelLeftOpen, GripVertical } from "lucide-react";
 import { useToolStore } from "@/stores/useToolStore";
 import { useSettingsStore } from "@/stores/useSettingsStore";
+import {
+  useWorkbench,
+  useWorkbenchPath,
+} from "@/features/workbench/WorkbenchContext";
 import { TOOL_META, GROUP_LABELS, type ToolGroup } from "@/lib/tools";
 import { cn } from "@/lib/cn";
 import type { ToolId } from "@/types";
@@ -28,6 +32,10 @@ function SortableItem({ id }: { id: ToolId }) {
   const meta = TOOL_META[id];
   const Icon = meta.icon;
   const collapsed = useSettingsStore((s) => s.sidebarCollapsed);
+  const wb = useWorkbenchPath();
+  const { basePath } = useWorkbench();
+  const to = wb(meta.path);
+  const isRoot = to === basePath;
 
   return (
     <div
@@ -40,8 +48,8 @@ function SortableItem({ id }: { id: ToolId }) {
       className="group relative"
     >
       <NavLink
-        to={meta.path}
-        end={meta.path === "/app"}
+        to={to}
+        end={isRoot}
         className={({ isActive }) =>
           cn(
             "flex items-center gap-2.5 h-9 px-2.5 rounded-md text-sm transition-colors relative",
@@ -89,6 +97,8 @@ export function Sidebar() {
   const collapsed = useSettingsStore((s) => s.sidebarCollapsed);
   const toggleSidebar = useSettingsStore((s) => s.toggleSidebar);
   const location = useLocation();
+  const wb = useWorkbenchPath();
+  const { basePath, mode } = useWorkbench();
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 4 } })
@@ -99,7 +109,6 @@ export function Sidebar() {
     .sort((a, b) => a.order - b.order)
     .map((t) => t.id);
 
-  // 按分组拆分：dashboard 独立置顶，其余按 ToolMeta.group 分组
   const groups: { group: ToolGroup; ids: ToolId[] }[] = (
     ["urgent", "longterm"] as ToolGroup[]
   ).map((group) => ({
@@ -114,7 +123,6 @@ export function Sidebar() {
     const oldIdx = groupIds.indexOf(active.id as ToolId);
     const newIdx = groupIds.indexOf(over.id as ToolId);
     if (oldIdx === -1 || newIdx === -1) return;
-    // 拖拽只在组内生效；组间顺序通过整组拼接保持
     const reordered = arrayMove(groupIds, oldIdx, newIdx);
     const next: ToolId[] = [];
     groups.forEach((g) => {
@@ -124,7 +132,6 @@ export function Sidebar() {
     reorder(next);
   };
 
-  // 快捷键 Cmd/Ctrl + B
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "b") {
@@ -138,14 +145,12 @@ export function Sidebar() {
 
   return (
     <>
-      {/* 桌面 / 平板侧边栏 */}
       <aside
         className={cn(
           "hidden md:flex flex-col shrink-0 bg-surface border-r border-default transition-[width] duration-200 ease-out",
           collapsed ? "w-[60px]" : "w-[232px]"
         )}
       >
-        {/* Logo 区 */}
         <div
           className={cn(
             "h-14 flex items-center border-b border-default",
@@ -167,10 +172,10 @@ export function Sidebar() {
           {!collapsed && (
             <div className="min-w-0 flex-1">
               <div className="text-sm font-semibold text-primary truncate">
-                个人工作台
+                {mode === "demo" ? "试用沙箱" : "个人工作台"}
               </div>
               <div className="text-2xs text-muted truncate">
-                Personal Workbench
+                {mode === "demo" ? "Local Demo" : "Personal Workbench"}
               </div>
             </div>
           )}
@@ -185,14 +190,10 @@ export function Sidebar() {
           </button>
         </div>
 
-        {/* 工具列表 */}
         <nav className="flex-1 overflow-y-auto p-2 space-y-0.5">
-          {/* 每日启动页：独立置顶 */}
           <SortableItem id="dashboard" />
 
-          {/* 分组渲染：即时推进 / 长期积累 */}
           {groups.map((g, idx) => {
-            // 顶部组分隔线 + 组标题
             const showHeader = !collapsed && g.ids.length > 0;
             return (
               <div key={g.group} className="mt-2">
@@ -241,25 +242,25 @@ export function Sidebar() {
             </p>
           )}
         </nav>
-
       </aside>
 
-      {/* 移动端底部 Tab */}
       <nav className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-surface border-t border-default flex items-stretch h-14 pb-[env(safe-area-inset-bottom)]">
         {(["dashboard", ...visibleTools.filter((i) => i !== "dashboard")] as ToolId[])
           .slice(0, 5)
           .map((id) => {
             const meta = TOOL_META[id];
             const Icon = meta.icon;
-            const active =
-              meta.path === "/app"
-                ? location.pathname === "/app"
-                : location.pathname.startsWith(meta.path);
+            const to = wb(meta.path);
+            const isRoot = to === basePath;
+            const active = isRoot
+              ? location.pathname === basePath ||
+                location.pathname === `${basePath}/`
+              : location.pathname.startsWith(to);
             return (
               <NavLink
                 key={id}
-                to={meta.path}
-                end={meta.path === "/app"}
+                to={to}
+                end={isRoot}
                 className={cn(
                   "flex-1 flex flex-col items-center justify-center gap-0.5 text-2xs transition-colors",
                   active ? "text-brand" : "text-muted"

@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/Button";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { AIAssistButton } from "@/components/shared/AIAssistButton";
 import { TaskForm } from "@/features/tasks/TaskForm";
+import { useWorkbenchPath } from "@/features/workbench/WorkbenchContext";
 import {
   PRIORITY_LABELS,
   PRIORITY_DOT,
@@ -35,6 +36,7 @@ import { cn } from "@/lib/cn";
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const wb = useWorkbenchPath();
   const [taskFormOpen, setTaskFormOpen] = useState(false);
   const tasks = useTaskStore((s) => s.tasks);
   const projects = useProjectStore((s) => s.projects);
@@ -79,7 +81,7 @@ export default function Dashboard() {
       list.push({
         tone: "danger",
         text: `${overdueCount} 项待办已逾期`,
-        onClick: () => navigate("/app/tasks?filter=overdue"),
+        onClick: () => navigate(wb("/tasks?filter=overdue")),
       });
     }
     const todayCount = openTasks.filter((t) => isDueToday(t.dueDate)).length;
@@ -87,7 +89,7 @@ export default function Dashboard() {
       list.push({
         tone: "warning",
         text: `${todayCount} 项今日到期`,
-        onClick: () => navigate("/app/tasks?filter=today"),
+        onClick: () => navigate(wb("/tasks?filter=today")),
       });
     }
     // 停滞项目（paused 状态）
@@ -96,7 +98,7 @@ export default function Dashboard() {
       list.push({
         tone: "warning",
         text: `${pausedProjects.length} 个项目处于暂停状态`,
-        onClick: () => navigate("/app/projects"),
+        onClick: () => navigate(wb("/projects")),
       });
     }
     // 雅思考试临近
@@ -107,12 +109,12 @@ export default function Dashboard() {
         list.push({
           tone: days <= 7 ? "danger" : "warning",
           text: `距雅思考试还有 ${days} 天`,
-          onClick: () => navigate("/app/ielts"),
+          onClick: () => navigate(wb("/ielts")),
         });
       }
     }
     return list;
-  }, [openTasks, projects, ieltsPlans, navigate]);
+  }, [openTasks, projects, ieltsPlans, navigate, wb]);
 
   // 本周概览
   const weekStats = useMemo(() => {
@@ -224,7 +226,7 @@ export default function Dashboard() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => navigate("/app/tasks")}
+                  onClick={() => navigate(wb("/tasks"))}
                 >
                   查看全部 <ArrowRight size={12} />
                 </Button>
@@ -252,7 +254,7 @@ export default function Dashboard() {
                   <li
                     key={t.id}
                     className="px-4 py-2.5 flex items-center gap-3 hover:bg-hover cursor-pointer transition-colors"
-                    onClick={() => navigate("/app/tasks")}
+                    onClick={() => navigate(wb("/tasks"))}
                   >
                     <span
                       className={cn(
@@ -361,22 +363,22 @@ export default function Dashboard() {
             <QuickAdd
               icon={<KanbanSquare size={16} />}
               label="新建项目"
-              onClick={() => navigate("/app/projects?new=1")}
+              onClick={() => navigate(wb("/projects?new=1"))}
             />
             <QuickAdd
               icon={<GraduationCap size={16} />}
               label="雅思打卡"
-              onClick={() => navigate("/app/ielts?tab=checkin&new=1")}
+              onClick={() => navigate(wb("/ielts?tab=checkin&new=1"))}
             />
             <QuickAdd
               icon={<Radio size={16} />}
               label="自媒体选题"
-              onClick={() => navigate("/app/media?new=1")}
+              onClick={() => navigate(wb("/media?new=1"))}
             />
             <QuickAdd
               icon={<BookOpen size={16} />}
               label="记录积累"
-              onClick={() => navigate("/app/culture?new=1")}
+              onClick={() => navigate(wb("/culture?new=1"))}
             />
           </div>
         </CardBody>

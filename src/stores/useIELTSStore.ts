@@ -9,6 +9,7 @@ import type {
   IELTSSkill,
   ErrorReviewStatus,
 } from "@/types";
+import { createScopedJSONStorage } from "@/lib/storageScope";
 import { genId, nowISO } from "@/lib/id";
 
 interface IELTSState {
@@ -145,7 +146,7 @@ export const useIELTSStore = create<IELTSState>()(
           courses: data.courses ?? s.courses,
         })),
     }),
-    { name: "pwb:ielts" }
+    { name: "pwb:ielts", storage: createScopedJSONStorage() }
   )
 );
 

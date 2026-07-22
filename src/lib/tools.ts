@@ -100,3 +100,18 @@ export const TOOL_ORDER: ToolId[] = [
   "media",
   "culture",
 ];
+
+/** /try 沙盒与 /app 私人工作台共用工具表，按当前路径切换前缀 */
+export function workbenchBase(pathname: string): "/app" | "/try" {
+  return pathname.startsWith("/try") ? "/try" : "/app";
+}
+
+export function toolPath(base: "/app" | "/try", id: ToolId): string {
+  return id === "dashboard" ? base : `${base}/${id}`;
+}
+
+export function resolveToolPath(pathname: string, metaPath: string): string {
+  const base = workbenchBase(pathname);
+  if (metaPath === "/app") return base;
+  return metaPath.replace(/^\/app/, base);
+}

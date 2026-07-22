@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { CultureItem, Excerpt } from "@/types";
 import { genId, nowISO } from "@/lib/id";
+import { createScopedJSONStorage } from "@/lib/storageScope";
 
 interface CultureState {
   items: CultureItem[];
@@ -114,6 +115,6 @@ export const useCultureStore = create<CultureState>()(
           items: replace ? items : [...items, ...s.items],
         })),
     }),
-    { name: "pwb:culture" }
+    { name: "pwb:culture", storage: createScopedJSONStorage() }
   )
 );

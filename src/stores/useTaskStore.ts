@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Task } from "@/types";
 import { genId, nowISO } from "@/lib/id";
+import { createScopedJSONStorage } from "@/lib/storageScope";
 
 interface TaskState {
   tasks: Task[];
@@ -68,6 +69,6 @@ export const useTaskStore = create<TaskState>()(
           tasks: replace ? tasks : [...tasks, ...s.tasks],
         })),
     }),
-    { name: "pwb:tasks" }
+    { name: "pwb:tasks", storage: createScopedJSONStorage() }
   )
 );
